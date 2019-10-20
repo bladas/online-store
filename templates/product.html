@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Продукти категорії</title>
+</head>
+<body>
+<h1> Продукти категорії {{ category.title }}</h1>
+{% for product in category.product_set.all %}
+    {{ product.name_product }}
+    <hr>
+    <br>
+{% endfor %}
+
+</body>
+</html>

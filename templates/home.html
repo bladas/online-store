@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Store</title>
+    <link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="text-center">
+                    <h1>Каегорії товару</h1>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+            <div class="col-md-12">
+                    {% for category in category_list %}
+
+                        <div class="col-md-3 text-center">
+                            <a href="{% url  'home:detail' category.id %}">{{ category.title }}</a>
+                        </div>
+
+                    {% endfor %}
+
+            </div>
+         </div>
+        </section>
+    </div>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>
