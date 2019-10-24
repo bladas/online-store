@@ -1,12 +1,18 @@
+import json
 from home.models import Undercategory
+from django.conf import settings
 
+settings.configure(DEBUG=True)
+# my_model = apps.get_model('home', 'U')
 
 def create():
-    Undercategory1 = open('data.json', 'r')
-    for line in Undercategory1:
-        new_category = Undercategory.objects.create(title= line)
-        new_category.save()
+    with open('data.json', 'r') as json_file:
+        data = json.load(json_file)
+        for elem in data:
+            print(elem.get('title'))
+            new_category = Undercategory.objects.create(title=elem.get('title'))
+        # new_category = Undercategory(title=elem.get('title'))
+            new_category.save()
 
 
-if __name__ == '__main__':
-    create()
+create()
