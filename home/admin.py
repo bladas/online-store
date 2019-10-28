@@ -9,5 +9,4 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category)
-admin.site.register(Undercategory)
 admin.site.register(Product, ProductAdmin)

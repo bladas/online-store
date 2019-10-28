@@ -11,7 +11,6 @@ def create():
         for elem in data:
             print(elem.get('title'))
             new_category = Category.objects.create(title=elem.get('title'))
-            # # new_category = Undercategory(title=elem.get('title'))
             new_category.save()
 
 
