@@ -117,11 +117,18 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
 CSS_URL = os.path.join(STATIC_URL, 'css/')
 IMG_URL = os.path.join(STATIC_URL, 'img/')
 LIB_URL = os.path.join(STATIC_URL, 'lib/')
 JS_URL = os.path.join(STATIC_URL, 'js/')
+
+
+try:
+    from private_settings import *
+except ImportError:
+    print('File private_settings.py is required')
