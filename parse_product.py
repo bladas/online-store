@@ -1,9 +1,13 @@
 import json
-
-from bs4 import BeautifulSoup
 import urllib.request
 
-url1 = 'https://rozetka.com.ua/notebooks/c80004/filter/'
+from bs4 import BeautifulSoup
+
+
+urls = {
+    'https://rozetka.com.ua/tablets/c130309/filter/',
+}
+url1 = 'https://rozetka.com.ua/notebooks/c80004/filter/',
 
 
 def get_html(url):
@@ -16,14 +20,20 @@ product = []
 
 def parse(html):
     soup = BeautifulSoup(html)
-    div = soup.find('div', class_='cat-g-b clearfix')
-    for row in div.find_all('div', class_='g-i-tile-i-box-desc'):
-        cols = row.find_all('div', class_ = 'g-i-tile-i-title clearfix')
+    div = soup.find('div', class_='col-main container clearfix')
+    for row in div.find_all('div', class_='g-i-tile g-i-tile-catalog'):
+        cols = row.find_all('div', class_='g-i-tile-i-title clearfix')
+        # print(div.h1.text)
+        print(cols[0].a.text)
         product.append({
-            'title': cols[0].a.text[1:-1]
+            # 'category': div.h1.text[1:1],
+            'objects': [
+                {
+                    'object_name': cols[0].a.text[1:1]
+                }
+            ]
+
         })
-
-
 
     return product
 
