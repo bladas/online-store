@@ -6,7 +6,8 @@ from bs4 import BeautifulSoup
 import requests
 
 ROOT_URL = 'https://rozetka.com.ua'
-
+myjson = []
+myjson1 = []
 
 def get_html(url):
     response = requests.get(url)
@@ -22,6 +23,7 @@ def parse_url(html):
             temp_url = item.a.get('href')
             print("Category Url : " + temp_url)
             go_url(get_html(temp_url))
+
     except AttributeError:
         print("Restart Program Please (Internet so bad)")
 
@@ -37,6 +39,8 @@ def go_url(html):
             temp_url_product = item.a.get('href')
             print("UC url: " + temp_url_product)
             parse(get_html(temp_url_product))
+            print("UC = " + item.a.text[1:-1])
+
     except AttributeError:
         print("i cant get UC in Category")
 
@@ -44,11 +48,20 @@ def go_url(html):
 def parse(html):
     soup = BeautifulSoup(html, 'lxml')
     try:
-        # h1 = soup.find('div', class_='c-cols c-cols-inverse clearfix wrap')
+
         div = soup.find('div', class_='g-i-tile-l g-i-tile-catalog-hover-left-side clearfix')
+        h1 = soup.find('div', class_='cat-tree')
         for row in div.find_all('div', class_='g-i-tile g-i-tile-catalog'):
             cols = row.find_all('div', class_='g-i-tile-i-title clearfix')
+
             print(cols[0].a.text)
+            myjson.append({
+                'category':categories.text[1:-1],
+                'objects':{
+                    'object': row.a.text[1:-1]
+                },
+
+            })
     except AttributeError:
         # try:
         print("dont take product but we working")
@@ -59,19 +72,29 @@ def parse(html):
 
     else:
         print("pizdec")
-
+    return myjson
 
 def parseproduct(html):
     soup = BeautifulSoup(html, 'lxml')
     try:
-        h1 = soup.find('div', class_='c-cols c-cols-inverse clearfix wrap')
+        # h1 = soup.find('div', class_='c-cols c-cols-inverse clearfix wrap')
         div = soup.find('div', class_='g-i-tile-l g-i-tile-catalog-hover-left-side clearfix')
+        categories = soup.find('a', class_='cat-tree-l-i-link sprite-side novisited')
+        print(categories.text[1:-1])
         for row in div.find_all('div', class_='g-i-tile g-i-tile-catalog'):
+
             cols = row.find_all('div', class_='g-i-tile-i-title clearfix')
             print(cols[0].a.text)
+            myjson1.append({
+                'category': categories.text[1:-1],
+                'objects': {
+                    'object': row.a.text[1:-1]
+                },
+
+            })
     except AttributeError:
         print("net shansov")
-
+    return myjson1
 
 # def uc_category(html):
 #     soup = BeautifulSoup(html, 'lxml')
