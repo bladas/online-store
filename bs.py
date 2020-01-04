@@ -5,130 +5,111 @@ import time
 from bs4 import BeautifulSoup
 import requests
 
-ROOT_URL = 'https://rozetka.com.ua'
+ROOT_URL = 'https://www.citrus.ua/'
+
 myjson = []
-myjson1 = []
+
 
 def get_html(url):
     response = requests.get(url)
-    # print(response.status_code)
+
     return response.content
 
-
 def parse_url(html):
-    soup = BeautifulSoup(html, 'lxml')
-    try:
-        container = soup.find('ul', class_='menu-categories menu-categories_type_main')
-        for item in container.find_all('li', class_='menu-categories__item')[:-2]:
-            temp_url = item.a.get('href')
-            print("Category Url : " + temp_url)
-            go_url(get_html(temp_url))
+    soup = BeautifulSoup(html, 'html.parser')
 
-    except AttributeError:
-        print("Restart Program Please (Internet so bad)")
+    container = soup.find('ul', class_='menu-aim')
+    for item in container.find_all('a', 'href' == True)[2:-1]:
+        category_url = item.get('href')
+        # print('Category url = ' + category_url)
 
-    # except AttributeError:
-    #     print("poymal except")
+        page_count = get_page_count(get_html(ROOT_URL + category_url))
 
-
-def go_url(html):
-    soup = BeautifulSoup(html, 'lxml')
-    try:
-        container = soup.find('div', class_='custom-top-block portal-notebooks')
-        for item in container.find_all('p', class_='h3 pab-h3'):
-            temp_url_product = item.a.get('href')
-            print("UC url: " + temp_url_product)
-            parse(get_html(temp_url_product))
-            print("UC = " + item.a.text[1:-1])
-
-    except AttributeError:
-        print("i cant get UC in Category")
+        for page in range(page_count+1):
+            print('page# - '+ str(page))
+            get_product(get_html(ROOT_URL + category_url+'page_%d' % page))
 
 
-def parse(html):
-    soup = BeautifulSoup(html, 'lxml')
+def get_product(html):
+    soup = BeautifulSoup(html, 'html.parser')
     try:
 
-        div = soup.find('div', class_='g-i-tile-l g-i-tile-catalog-hover-left-side clearfix')
-        h1 = soup.find('div', class_='cat-tree')
-        for row in div.find_all('div', class_='g-i-tile g-i-tile-catalog'):
-            cols = row.find_all('div', class_='g-i-tile-i-title clearfix')
+        container = soup.find('div', class_='catalog__main-content')
+        print('1')
 
-            print(cols[0].a.text)
+        for item in container.find_all('div', class_="product-card__body"):
+            category = soup.find('ul', class_='breadcrumbs')
+            categoryitem = category.find_all('a')[1].text
+            undercategory = soup.find('ul', class_='breadcrumbs')
+            undercategoryitem = undercategory.find_all('a')[2].text
+            name = item.find('div',class_= 'product-card__name').a.get('title')
+            print('CATEGORY - ' + categoryitem)
+            print('und cat - '+undercategoryitem)
+            print(name)
+            price = item.find('span', class_='price').text
+
+            print('price = ' + price)
             myjson.append({
-                'category':categories.text[1:-1],
-                'objects':{
-                    'object': row.a.text[1:-1]
-                },
+                            'category':categoryitem,
+                            'undercategory':undercategoryitem,
+                            'name':name,
+                            'price':price
 
-            })
-    except AttributeError:
-        # try:
-        print("dont take product but we working")
-        container = soup.find('div', class_='pab-table')
-        for b in container.find_all('p', class_='pab-h4'):
-            temp = b.a.get('href')
-            parseproduct(get_html(temp))
 
-    else:
-        print("pizdec")
-    return myjson
+                        })
 
-def parseproduct(html):
-    soup = BeautifulSoup(html, 'lxml')
+
+    except:
+        try:
+
+            container = soup.find('div', class_='sub-categories__items')
+            # h1 = soup.find('h1').text
+
+            # print('Category = ' + h1)
+            for item in container.find_all('div', class_='item shadow'):
+                udndercategory_url = item.a.get('href')
+                # print(udndercategory_url)
+                get_product(get_html(ROOT_URL + udndercategory_url))
+        except:
+            print('no products')
+
+
+def get_page_count(html):
+    soup = BeautifulSoup(html, 'html.parser')
+
     try:
-        # h1 = soup.find('div', class_='c-cols c-cols-inverse clearfix wrap')
-        div = soup.find('div', class_='g-i-tile-l g-i-tile-catalog-hover-left-side clearfix')
-        categories = soup.find('a', class_='cat-tree-l-i-link sprite-side novisited')
-        print(categories.text[1:-1])
-        for row in div.find_all('div', class_='g-i-tile g-i-tile-catalog'):
 
-            cols = row.find_all('div', class_='g-i-tile-i-title clearfix')
-            print(cols[0].a.text)
-            myjson1.append({
-                'category': categories.text[1:-1],
-                'objects': {
-                    'object': row.a.text[1:-1]
-                },
+        paggination = soup.find('div', class_='pagination-container')
 
-            })
-    except AttributeError:
-        print("net shansov")
-    return myjson1
+        try:
+            number = int(paggination.find_all('a', class_='')[-2].text)
 
-# def uc_category(html):
-#     soup = BeautifulSoup(html, 'lxml')
-#     try:
-#         # h1 = soup.find('div', class_='c-cols c-cols-inverse clearfix wrap')
-#         div = soup.find('div', class_='p-auto-block p-auto-block-1')
-#         for row in div.find_all('div', class_='g-i-tile g-i-tile-catalog'):
-#             cols = row.find_all('p', class_='pab-h4')
-#             p
-#             print(cols[0].a.text)
-#     except:
-#         print("dont take product")
+        except:
+            number = 1
+        print('kolichestvo str - '+ str(number))
+        return number
+    except:
+        print('tak i dumav')
+        try:
+            container = soup.find('div', class_='sub-categories__items')
+
+            for item in container.find_all('div', class_='item shadow'):
+                udndercategory_url = item.a.get('href')
+                print(udndercategory_url)
+                get_page_count(get_html(ROOT_URL + udndercategory_url))
+
+        except:
+           print('xz etogo ne budet')
 
 
-#         product.append({
-#             'category': h1.h1.text[1:-1],
-#             'objects': [
-#                 {
-#                     'object_name': cols[0].a.text[1:-1]
-#                 }
-#             ]
-#
-#         })
-#
-#     return product
-
-
-# def save(product):
-#     with open('data.json', 'w') as f:
-#         json.dump(product, f)
+def save(product):
+    with open('citrus.json', 'w') as f:
+        json.dump(product, f)
 
 
 def main():
     parse_url(get_html(ROOT_URL))
+    save(myjson)
 
 
 if __name__ == '__main__':
