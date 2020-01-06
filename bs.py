@@ -21,7 +21,7 @@ def parse_url(html):
     container = soup.find('ul', class_='menu-aim')
     for item in container.find_all('a', 'href' == True)[2:-1]:
         category_url = item.get('href')
-        # print('Category url = ' + category_url)
+        print('Category url = ' + category_url)
 
         page_count = get_page_count(get_html(ROOT_URL + category_url))
 
@@ -43,7 +43,7 @@ def get_product(html):
             undercategory = soup.find('ul', class_='breadcrumbs')
             undercategoryitem = undercategory.find_all('a')[2].text
             name = item.find('div',class_= 'product-card__name').a.get('title')
-            print('CATEGORY - ' + categoryitem)
+            print('Категория' + categoryitem)
             print('und cat - '+undercategoryitem)
             print(name)
             price = item.find('span', class_='price').text
